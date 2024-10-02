@@ -1,0 +1,34 @@
+\newcommand{\lst}[1]{
+  \lstinputlisting[
+    caption={#1},
+    label={lst:#1} 
+  ]{#1.cpp}
+}
+
+\newcommand{\fig}[2][0.8] {
+\begin{figure}[H]
+    \centering
+    \includegraphics[width = #1\textwidth]{#2}
+    \caption{#2}
+    \label{fig:#2}
+\end{figure}
+}
+
+\newcommand\sbs[2]{%
+  \begin{figure}[H]
+    \centering
+    \begin{minipage}[t]{0.49\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{#1}
+      \caption{#1}
+      \label{fig:#1}
+    \end{minipage}
+    \hfill % Adds some space between the images
+    \begin{minipage}[t]{0.49\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{#2}
+      \caption{#2}
+      \label{fig:#2}
+    \end{minipage}
+  \end{figure}
+}

@@ -1,0 +1,101 @@
+% *** MATH PACKAGES ***
+\usepackage{amsmath}
+
+% *** PDF, URL AND HYPERLINK PACKAGES ***
+\usepackage{url}
+
+% code package
+\usepackage{listings}
+\usepackage{xcolor}
+
+%New colors defined below
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.98,0.98,0.98}
+\definecolor{codeblue}{rgb}{0,0,15}
+
+% Monokai color scheme
+\definecolor{monokaibg}{rgb}{0.15, 0.16, 0.13} % Background: Monokai sand
+\definecolor{monokaikey}{rgb}{0.8, 0.6, 0.47} % Keywords: Monokai orange
+\definecolor{monokaicomment}{rgb}{0.47, 0.62, 0.36} % Comments: Monokai green
+\definecolor{monokaistring}{rgb}{0.95, 0.73, 0.27} % Strings: Monokai yellow
+\definecolor{monokaifunc}{rgb}{0.69, 0.6, 0.78} % Functions: Monokai purple
+
+% GitHub color scheme
+\definecolor{githubbg}{rgb}{1, 1, 1} % Background: GitHub white
+\definecolor{githubkey}{rgb}{0.36, 0.54, 0.66} % Keywords: GitHub dark blue
+\definecolor{githubcomment}{rgb}{0.0, 0.5, 0.0} % Comments: GitHub green
+\definecolor{githubstring}{rgb}{0.64, 0.08, 0.08} % Strings: GitHub dark red
+\definecolor{githubfunc}{rgb}{0.0, 0.0, 0.0} % Functions: GitHub black
+
+%Code listing style named "mystyle"
+\lstdefinestyle{mystyle}{
+  backgroundcolor=\color{githubbg},
+  commentstyle=\color{githubcomment},
+  keywordstyle=\color{githubkey},
+  stringstyle=\color{githubstring},
+  basicstyle=\color{githubfunc},
+  breakatwhitespace=false,         
+  breaklines=true,                 
+  captionpos=t,                    
+  keepspaces=true,                 
+  numbers=left,                    
+  numbersep=2pt,                  
+  showspaces=false,                
+  showstringspaces=false,
+  showtabs=false,                  
+  tabsize=2,
+  frame=single,
+  rulecolor=\color[RGB]{211,211,211},
+  language=C++
+}
+
+%"mystyle" code listing set
+\lstset{style=mystyle, numbers=none}
+
+% correct bad hyphenation here
+\hyphenation{op-tical net-works semi-conduc-tor}
+\usepackage{graphicx}  %needed to include png, eps figures
+\usepackage{float}  % used to fix location of images i.e.\begin{figure}[H]
+\graphicspath{{Attachments/}}
+
+\usepackage{parskip}
+
+\usepackage{subcaption} % used to create subfigure
+
+% Add the geometry package for page layout adjustments
+\usepackage[margin=2cm]{geometry}
+
+% Set the indentation for the Table of Contents
+\usepackage{tocloft}
+\setlength{\cftsecindent}{0em}      % Adjust as needed
+\setlength{\cftsubsecindent}{1em}   % Adjust as needed
+\setlength{\cftsubsubsecindent}{2em}% Adjust as needed
+
+% Hyperlinks
+\usepackage[hidelinks]{hyperref}
+\hypersetup{
+    colorlinks=true,
+    urlcolor=blue,
+    urlbordercolor=blue,
+    linkcolor=black,
+    citecolor=black,
+    filecolor=black,
+}
+
+% Prevent stretching the vertical space on a page to make the bottom of the page align with the bottom of the text.
+\setlength{\parskip}{0pt}
+
+\usepackage{titlesec}
+\titleformat{\section}[block]{\normalfont\Large\bfseries}{\thesection}{1em}{}
+\titlespacing*{\section}{0pt}{3pt}{3pt}
+
+% cleveref package for referencing figures, tables, equations, etc.
+\usepackage{cleveref}
+
+\renewcommand{\figurename}{Fig.}
+\crefname{equation}{Eqn.}{Eqns.}
+\Crefname{equation}{Eqn.}{Eqns.}
+\usepackage{multicol}
+\usepackage{times}
