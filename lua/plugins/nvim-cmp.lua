@@ -30,6 +30,8 @@ return {
 		require("luasnip.loaders.from_vscode").lazy_load()
 
 		cmp.setup({
+			-- *cmp-config.view.docs.auto_open*
+			-- cmp.view.docs.auto_open = false,
 			snippet = {
 				expand = function(args)
 					luasnip.lsp_expand(args.body)
@@ -74,11 +76,17 @@ return {
 				{ name = "luasnip" }, -- snippets
 				{ name = "buffer" }, -- text within current buffer
 				{ name = "path" }, -- file system paths
+				{ documentation = false },
 			}),
 			window = {
 				-- Add borders to completions popups
 				completion = cmp.config.window.bordered(),
 				documentation = cmp.config.window.bordered(),
+			},
+			view = {
+				docs = {
+					auto_open = false,
+				},
 			},
 		})
 	end,

@@ -86,15 +86,6 @@ return {
 					server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
 					require("lspconfig")[server_name].setup(server)
 				end,
-
-				-- clangd = function()
-				-- 	require("lspconfig").clangd.setup({
-				-- 		cmd = { "clangd" },
-				-- 		capabilities = {
-				-- 			offsetEncoding = "utf-8",
-				-- 		},
-				-- 	})
-				-- end,
 			},
 		})
 
