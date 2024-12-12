@@ -1,4 +1,4 @@
-function create_latex_document()
+local function create_latex_document()
 	-- First check if the directory is empty
 	local files = vim.fn.glob("*")
 	if #files > 0 then
@@ -45,9 +45,9 @@ function create_latex_document()
 	-- Create the 'report.tex' file from the template
 	create_file_from_template("report.tex", "report.tex")
 
-  create_file_from_template("coverpage.tex", "coverpage.tex")
+	create_file_from_template("coverpage.tex", "coverpage.tex")
 
-  create_file_from_template("macros.tex", "macros.tex")
+	create_file_from_template("macros.tex", "macros.tex")
 
 	-- Create the 'bib.bib' file (empty for this example)
 	local bib_file = io.open("bib.bib", "w")

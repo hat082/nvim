@@ -151,25 +151,9 @@ return {
 		)
 	),
 
-	-- subscripts _{}
-	s(
-		{ trig = "s" },
-		-- Using a multiline string for the equation snippet
-		fmta([[_{<>} ]], { i(1) }),
-		{ condition = tex_utils.in_mathzone }
-	),
-
-	-- superscripts ^{}
-	s(
-		{ trig = "S" },
-		-- Using a multiline string for the equation snippet
-		fmta([[^{<>} ]], { i(1) }),
-		{ condition = tex_utils.in_mathzone }
-	),
-
 	-- scientific notation \times 10^{}
 	s(
-		{ trig = "e" },
+		{ trig = "en", snippetType = "autosnippet" },
 		-- Using a multiline string for the equation snippet
 		fmta([[\times 10^{<>} ]], { i(1) }),
 		{ condition = tex_utils.in_mathzone }
@@ -177,9 +161,9 @@ return {
 
 	-- units: \,\mathrm{(<>)}
 	s(
-		{ trig = "u" },
+		{ trig = "rm", snippetType = "autosnippet" },
 		-- Using a multiline string for the equation snippet
-		fmta([[\,(\mathrm{<>}) ]], { i(1) }),
+		fmta([[\,\mathrm{<>} ]], { i(1) }),
 		{ condition = tex_utils.in_mathzone }
 	),
 
@@ -235,6 +219,22 @@ return {
 				i(1),
 				i(2),
 				rep(1), -- this node repeats insert node i(1)
+			}
+		)
+	),
+
+	-- create \begin{equation} snippet
+	s(
+		{ trig = "^dm", snippetType = "autosnippet", wordTrig = false, regTrig = true },
+		fmta(
+			[[
+      \begin{equation}
+      <>
+      \end{equation}
+
+      ]],
+			{
+				i(1),
 			}
 		)
 	),
@@ -304,7 +304,7 @@ return {
 
 	-- inline math block, but activates only if there are no characters directly connected to ma.
 	s(
-		{ trig = "([^%a])ma", snippetType = "autosnippet", wordTrig = false, regTrig = true },
+		{ trig = "([^%a])mk", snippetType = "autosnippet", wordTrig = false, regTrig = true },
 		fmta("<>$<>$", {
 			f(function(_, snip)
 				return snip.captures[1]
@@ -326,13 +326,23 @@ return {
 	),
 
 	-- create subscripts
-	-- s(
-	--   { trig = "([%a%)%]%}])ss", regTrig = true, wordTrig = false, snippetType = "autosnippet" },
-	--   fmta("<>_{<>}", {
-	--     f(function(_, snip)
-	--       return snip.captures[1]
-	--     end),
-	--     i(1),
-	--   })
-	-- ),
+	s(
+		{ trig = "([%a%d%)%]%}])_", regTrig = true, wordTrig = false, snippetType = "autosnippet" },
+		fmta("<>_{<>}", {
+			f(function(_, snip)
+				return snip.captures[1]
+			end),
+			i(1),
+		})
+	),
+	-- create superscripts
+	s(
+		{ trig = "([%a%d%)%]%}])pw", regTrig = true, wordTrig = false, snippetType = "autosnippet" },
+		fmta("<>^{<>}", {
+			f(function(_, snip)
+				return snip.captures[1]
+			end),
+			i(1),
+		})
+	),
 }

@@ -8,7 +8,7 @@ keymap.set("n", "<leader>wq", ":wq<CR>") -- save and quit
 keymap.set("n", "<leader>qq", ":q!<CR>") -- quit without saving
 keymap.set("n", "<leader>ww", ":w<CR>") -- save
 keymap.set("n", "gx", ":!open <c-r><c-a><CR>") -- open URL under cursor
-keymap.set("n", "<ESC>", "<cmd>noh<CR>")
+keymap.set("n", "<esc>", "<cmd>noh<CR>")
 
 function _G.set_terminal_keymaps()
 	local opts = { buffer = 0 }
