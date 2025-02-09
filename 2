@@ -1,0 +1,26 @@
+return {
+	"folke/noice.nvim",
+	event = "VeryLazy",
+	opts = {},
+	dependencies = {
+		"MunifTanjim/nui.nvim",
+	},
+	config = function()
+		require("noice").setup({
+			popupmenu = {
+				enabled = true, -- enables the Noice popupmenu UI
+				backend = "nui", -- backend to use to show regular cmdline completions
+				kind_icons = {}, -- set to `false` to disable icons
+			},
+			lsp = {
+				progress = {
+					enabled = true,
+					format = "lsp_progress",
+					format_done = "lsp_progress_done",
+					throttle = 1000 / 30, -- frequency to update lsp progress message
+					view = "mini",
+				},
+			},
+		})
+	end,
+}

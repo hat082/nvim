@@ -23,8 +23,24 @@ return {
 			require("mason-lspconfig").setup({
 				ensure_installed = { "lua_ls" },
 			})
+			local lsp = require("lspconfig")
 			local capabilites = require("blink.cmp").get_lsp_capabilities()
-			require("lspconfig").lua_ls.setup({ capabilites = capabilites })
+			lsp.lua_ls.setup({ capabilites = capabilites })
+			lsp.clangd.setup({
+				capabilities = capabilites,
+				cmd = {
+					"clangd",
+					"--background-index", -- Index in the background
+					"--clang-tidy", -- Enable clang-tidy diagnostics
+					"--header-insertion=never", -- Disable auto-inserting headers
+					"--query-driver=/nix/store/*-gcc-wrapper-*/bin/gcc",
+				},
+				init_options = {
+					usePlaceholders = true,
+					completeUnimported = true,
+					clangdFileStatus = true,
+				},
+			})
 		end,
 	},
 }

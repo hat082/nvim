@@ -1,5 +1,3 @@
-require("config.core.keymaps")
-require("config.core.options")
 vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
 
@@ -12,3 +10,6 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 		vim.highlight.on_yank()
 	end,
 })
+
+require("config.core.keymaps")
+require("config.core.options")

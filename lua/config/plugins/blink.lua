@@ -1,22 +1,27 @@
 return {
-  'saghen/blink.cmp',
-  event = {"BufReadPre","BufNewFile"},
-  dependencies = {
-    'rafamadriz/friendly-snippets',
-	"L3MON4D3/LuaSnip",
-},
-  version = '*',
-  opts = {
-    keymap = { preset = 'default' },
+	"saghen/blink.cmp",
+	event = { "BufReadPre", "BufNewFile" },
+	dependencies = {
+		"rafamadriz/friendly-snippets",
+		"L3MON4D3/LuaSnip",
+	},
+	version = "*",
+	opts = {
+		keymap = {
+			preset = "default",
+			-- cmdline = {
+			-- 	preset = "enter",
+			-- },
+		},
 
-    appearance = {
-      use_nvim_cmp_as_default = true,
-      nerd_font_variant = 'mono'
-    },
+		appearance = {
+			use_nvim_cmp_as_default = true,
+			nerd_font_variant = "mono",
+		},
 
-    sources = {
-      default = { 'lsp', 'path', 'snippets', 'buffer'},
-    },
-  },
-  opts_extend = { "sources.default" }
+		sources = {
+			default = { "lsp", "path", "snippets", "buffer" },
+		},
+	},
+	opts_extend = { "sources.default" },
 }
