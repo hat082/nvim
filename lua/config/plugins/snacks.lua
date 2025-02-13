@@ -3,7 +3,6 @@ return {
 	config = function()
 		local snacks = require("snacks")
 		snacks.setup({
-
 			bigfile = { enabled = true },
 			dashboard = { enabled = true },
 			indent = { enabled = true },
@@ -13,8 +12,21 @@ return {
 			scroll = { enabled = true },
 			statuscolumn = { enabled = true },
 			zen = { enabled = true },
-
-			keys = {},
 		})
+
+		vim.keymap.set("n", "<leader>z", function()
+			snacks.zen.zoom({
+				toggles = {
+					dim = true,
+					git_signs = false,
+					mini_diff_signs = false,
+					diagnostics = false,
+					inlay_hints = false,
+				},
+				win = {
+					backdrop = false,
+				},
+			})
+		end)
 	end,
 }
