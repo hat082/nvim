@@ -7,7 +7,7 @@ return {
 				lua = { "stylua" },
 				c = { "clang-format" },
 				cpp = { "clang-format" },
-				-- python = { "isort", "black" },
+				tex = { "tex-fmt" },
 			},
 		})
 		vim.api.nvim_create_autocmd("BufWritePre", {

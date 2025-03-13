@@ -23,6 +23,8 @@ opt.smartcase = true
 
 -- Cursor Line
 opt.cursorline = true
+-- Cursor style
+vim.opt.guicursor = "n-v-c:block,i:ver50-blinkwait700-blinkon500-blinkoff500"
 
 -- Appearance
 opt.termguicolors = true

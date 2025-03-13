@@ -24,21 +24,34 @@ return {
 				ensure_installed = { "lua_ls" },
 			})
 			local lsp = require("lspconfig")
-			local capabilites = require("blink.cmp").get_lsp_capabilities()
-			lsp.lua_ls.setup({ capabilites = capabilites })
+			local capabilities = require("blink.cmp").get_lsp_capabilities()
+			lsp.lua_ls.setup({ capabilites = capabilities })
 			lsp.clangd.setup({
-				capabilities = capabilites,
+				capabilities = capabilities,
 				cmd = {
 					"clangd",
 					"--background-index", -- Index in the background
 					"--clang-tidy", -- Enable clang-tidy diagnostics
-					"--header-insertion=never", -- Disable auto-inserting headers
-					"--query-driver=/nix/store/*-gcc-wrapper-*/bin/gcc",
+					-- "--header-insertion=never", -- Disable auto-inserting headers
+					-- "--query-driver=/nix/store/*-gcc-wrapper-*/bin/gcc",
+					"--query-driver=/home/asus-ub/.nix-profile/bin/gcc",
 				},
 				init_options = {
 					usePlaceholders = true,
 					completeUnimported = true,
 					clangdFileStatus = true,
+				},
+			})
+			lsp.texlab.setup({
+				capabilities = capabilities,
+				settings = {
+					texlab = {
+						diagnostics = {
+							unusedLabels = {
+								enabled = false, -- Disable unused label warnings
+							},
+						},
+					},
 				},
 			})
 		end,
