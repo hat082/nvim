@@ -42,7 +42,6 @@ keymap.set("n", "<leader>un", function()
 end)
 
 -- hop
-
 local hop = require("hop")
 keymap.set({ "n", "v", "s", "o" }, "<leader>s", function()
 	hop.hint_char1({ current_line_only = false })

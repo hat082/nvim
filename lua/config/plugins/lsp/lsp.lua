@@ -42,18 +42,7 @@ return {
 					clangdFileStatus = true,
 				},
 			})
-			lsp.texlab.setup({
-				capabilities = capabilities,
-				settings = {
-					texlab = {
-						diagnostics = {
-							unusedLabels = {
-								enabled = false, -- Disable unused label warnings
-							},
-						},
-					},
-				},
-			})
+			lsp.tinymist.setup({ capabilities = capabilities })
 		end,
 	},
 }

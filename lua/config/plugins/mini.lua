@@ -24,7 +24,5 @@ return {
 			},
 		})
 		vim.keymap.set("n", "<leader>e", ":lua MiniFiles.open()<CR>")
-
-		-- [ ( { } ) ]
 	end,
 }
