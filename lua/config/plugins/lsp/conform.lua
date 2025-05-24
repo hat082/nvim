@@ -8,6 +8,7 @@ return {
 				c = { "clang-format" },
 				cpp = { "clang-format" },
 				tex = { "tex-fmt" },
+				go = { "gofumpt" },
 			},
 		})
 		vim.api.nvim_create_autocmd("BufWritePre", {

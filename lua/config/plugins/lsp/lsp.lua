@@ -43,6 +43,7 @@ return {
 				},
 			})
 			lsp.tinymist.setup({ capabilities = capabilities })
+			lsp.gopls.setup({ capabilities = capabilities })
 		end,
 	},
 }

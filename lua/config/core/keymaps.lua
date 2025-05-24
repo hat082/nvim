@@ -46,3 +46,6 @@ local hop = require("hop")
 keymap.set({ "n", "v", "s", "o" }, "<leader>s", function()
 	hop.hint_char1({ current_line_only = false })
 end, { remap = true })
+
+-- typst
+keymap.set("n", "<leader>tp", "<cmd>TypstPreview<cr>")
