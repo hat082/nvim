@@ -206,7 +206,7 @@ do
     map('n', '<leader>gw', gitsigns.toggle_word_diff, { desc = 'Toggle word diff' })
   end
 end
-map('n', '<leader>gg', '<cmd>Lazygit<CR>', { desc = 'Open lazygit' })
+map('n', '<leader>gg', '<cmd>LazyGit<CR>', { desc = 'Open lazygit' })
 
 -- ============================================================
 -- [[ UI: Bufferline, Trouble, Aerial, Oil, ToggleTerm ]]
