@@ -7,6 +7,43 @@ local ok_oil, oil = pcall(require, 'oil')
 local ok_conform, conform = pcall(require, 'conform')
 local ok_opencode, opencode = pcall(require, 'opencode')
 
+local function hover_in_vsplit()
+  local bufnr = vim.api.nvim_get_current_buf()
+  local params = vim.lsp.util.make_position_params(0, 'utf-8')
+
+  vim.lsp.buf_request(bufnr, 'textDocument/hover', params, function(err, result, ctx)
+    if err or not result or not result.contents then
+      vim.notify('No hover information', vim.log.levels.INFO)
+      return
+    end
+
+    local lines = vim.lsp.util.convert_input_to_markdown_lines(result.contents)
+    if vim.tbl_isempty(lines) then
+      vim.notify('No hover information', vim.log.levels.INFO)
+      return
+    end
+
+    vim.cmd 'vnew'
+    local hover_buf = vim.api.nvim_get_current_buf()
+    vim.bo[hover_buf].buftype = 'nofile'
+    vim.bo[hover_buf].bufhidden = 'wipe'
+    vim.bo[hover_buf].swapfile = false
+    vim.bo[hover_buf].modifiable = true
+    vim.bo[hover_buf].filetype = 'markdown'
+    vim.api.nvim_buf_set_lines(hover_buf, 0, -1, false, lines)
+    vim.bo[hover_buf].modifiable = false
+
+    local name = 'lsp-hover'
+    if ctx and ctx.client_id then
+      local client = vim.lsp.get_client_by_id(ctx.client_id)
+      if client then
+        name = name .. '-' .. client.name
+      end
+    end
+    vim.api.nvim_buf_set_name(hover_buf, name)
+  end)
+end
+
 local function url_in_line_at_col(line, col)
   if not line or line == '' or not col or col < 1 then
     return nil
@@ -125,10 +162,28 @@ map('n', '<leader>y', function()
 end, { desc = '[Y]ank fenced code block to clipboard' })
 
 -- ============================================================
--- [[ Snacks Picker ]]
+-- [[ Find & Search ]]
 -- ============================================================
 do
   if ok_snacks then
+    map('n', '<leader>ff', function()
+      snacks.picker.files()
+    end, { desc = '[F]ind [F]iles' })
+    map('n', '<leader>fs', function()
+      snacks.picker.smart()
+    end, { desc = '[F]ind [S]mart' })
+    map('n', '<leader>fb', function()
+      snacks.picker.buffers()
+    end, { desc = '[F]ind [B]uffers' })
+    map('n', '<leader>fr', function()
+      snacks.picker.recent()
+    end, { desc = '[F]ind [R]ecent files' })
+    map('n', '<leader>fp', function()
+      snacks.picker.projects()
+    end, { desc = '[F]ind [P]rojects' })
+    map('n', '<leader>fn', function()
+      snacks.picker.files { cwd = vim.fn.stdpath 'config' }
+    end, { desc = '[F]ind [N]eovim files' })
     map('n', '<leader>sh', function()
       snacks.picker.help()
     end, { desc = '[S]earch [H]elp' })
@@ -138,51 +193,30 @@ do
     map('n', '<leader>sc', function()
       snacks.picker.commands()
     end, { desc = '[S]earch [C]ommands' })
-    map('n', '<leader>sb', function()
+    map('n', '<leader>sp', function()
       snacks.picker.pickers()
-    end, { desc = '[S]earch [B]uiltins' })
-    map('n', '<leader>sf', function()
-      snacks.picker.files()
-    end, { desc = '[S]earch [F]iles' })
+    end, { desc = '[S]earch [P]ickers' })
     map('n', '<leader>e', function()
       snacks.explorer.open()
     end, { desc = '[E]xplorer open tree' })
-    map('n', '<leader>ff', function()
-      snacks.picker.smart()
-    end, { desc = '[S]earch [F]iles' })
     map('n', '<leader>ss', function()
-      snacks.picker.pickers()
-    end, { desc = '[S]earch [S]elect Snacks' })
+      snacks.picker.grep()
+    end, { desc = '[S]earch [S]tring in project' })
     map({ 'n', 'x' }, '<leader>sw', function()
       snacks.picker.grep_word()
     end, { desc = '[S]earch current [W]ord' })
-    map('n', '<leader>fg', function()
-      snacks.picker.grep()
-    end, { desc = '[S]earch by [G]rep' })
-    map('n', '<leader>fp', function()
-      snacks.picker.projects()
-    end, { desc = '[S]earch [P]rojects' })
     map('n', '<leader>sd', function()
       snacks.picker.diagnostics()
     end, { desc = '[S]earch [D]iagnostics' })
     map('n', '<leader>sr', function()
       snacks.picker.resume()
     end, { desc = '[S]earch [R]esume' })
-    map('n', '<leader>s.', function()
-      snacks.picker.recent()
-    end, { desc = '[S]earch Recent Files ("." for repeat)' })
-    map('n', '<leader><leader>', function()
-      snacks.picker.buffers()
-    end, { desc = '[ ] Find existing buffers' })
     map('n', '<leader>/', function()
       snacks.picker.lines {}
     end, { desc = '[/] Fuzzily search in current buffer' })
-    map('n', '<leader>s/', function()
+    map('n', '<leader>so', function()
       snacks.picker.grep_buffers()
-    end, { desc = '[S]earch [/] in Open Files' })
-    map('n', '<leader>sn', function()
-      snacks.picker.files { cwd = vim.fn.stdpath 'config' }
-    end, { desc = '[S]earch [N]eovim files' })
+    end, { desc = '[S]earch [O]pen buffers' })
     map('n', '<C-\\>', function()
       snacks.zen()
     end, { desc = 'Toggle [Z]en mode' })
@@ -193,20 +227,20 @@ end
 -- Git: gitsigns.nvim + lazygit.nvim
 do
   if ok_gitsigns then
-    map('n', '<leader>hs', gitsigns.stage_hunk, { desc = 'Stage hunk' })
-    map('n', '<leader>hr', gitsigns.reset_hunk, { desc = 'Reset hunk' })
-    map('n', '<leader>hS', gitsigns.stage_buffer, { desc = 'Stage buffer' })
-    map('n', '<leader>hR', gitsigns.reset_buffer, { desc = 'Reset buffer' })
-    map('n', '<leader>hp', gitsigns.preview_hunk, { desc = 'Preview hunk' })
-    map('n', '<leader>hb', function()
+    map('n', '<leader>gs', gitsigns.stage_hunk, { desc = '[G]it [S]tage hunk' })
+    map('n', '<leader>gr', gitsigns.reset_hunk, { desc = '[G]it [R]eset hunk' })
+    map('n', '<leader>gS', gitsigns.stage_buffer, { desc = '[G]it [S]tage buffer' })
+    map('n', '<leader>gR', gitsigns.reset_buffer, { desc = '[G]it [R]eset buffer' })
+    map('n', '<leader>gp', gitsigns.preview_hunk, { desc = '[G]it [P]review hunk' })
+    map('n', '<leader>gb', function()
       gitsigns.blame_line { full = true }
-    end, { desc = 'Blame line' })
-    map('n', '<leader>hd', gitsigns.diffthis, { desc = 'Diff this' })
-    map('n', '<leader>gb', gitsigns.toggle_current_line_blame, { desc = 'Toggle git blame' })
-    map('n', '<leader>gw', gitsigns.toggle_word_diff, { desc = 'Toggle word diff' })
+    end, { desc = '[G]it [B]lame line' })
+    map('n', '<leader>gd', gitsigns.diffthis, { desc = '[G]it [D]iff this' })
+    map('n', '<leader>gB', gitsigns.toggle_current_line_blame, { desc = '[G]it toggle [B]lame' })
+    map('n', '<leader>gw', gitsigns.toggle_word_diff, { desc = '[G]it [W]ord diff' })
   end
 end
-map('n', '<leader>gg', '<cmd>LazyGit<CR>', { desc = 'Open lazygit' })
+map('n', '<leader>gg', '<cmd>LazyGit<CR>', { desc = '[G]it lazy[G]it' })
 
 -- ============================================================
 -- [[ UI: Bufferline, Trouble, Aerial, Oil, ToggleTerm ]]
@@ -215,8 +249,8 @@ map('n', '<S-l>', '<cmd>BufferLineCycleNext<CR>', { desc = 'Next buffer' })
 map('n', '<S-h>', '<cmd>BufferLineCyclePrev<CR>', { desc = 'Prev buffer' })
 map('n', '<leader>d', '<cmd>bdelete<CR>', { desc = 'Close buffer' })
 map('n', '<leader>xx', '<cmd>Trouble diagnostics toggle<CR>', { desc = 'Diagnostics (Trouble)' })
-map('n', '<leader>xX', '<cmd>Trouble diagnostics toggle filter.buf=0<CR>', { desc = 'Buffer Diagnostics' })
-map('n', '<leader>cs', '<cmd>Trouble symbols toggle<CR>', { desc = 'Symbols (Trouble)' })
+map('n', '<leader>xb', '<cmd>Trouble diagnostics toggle filter.buf=0<CR>', { desc = 'Buffer Diagnostics' })
+map('n', '<leader>xs', '<cmd>Trouble symbols toggle<CR>', { desc = 'Symbols (Trouble)' })
 
 do
   if ok_aerial then
@@ -226,27 +260,30 @@ end
 
 do
   if ok_oil then
-    map('n', '<leader>o', oil.open, { desc = 'open oil' })
+    map('n', '<leader>o', oil.toggle_float, { desc = 'Toggle [O]il float' })
   end
 end
 
-map('n', '<C-`>', function()
+local function toggle_terminal()
   local dir = vim.fn.expand '%:p:h'
   if dir == '' or vim.fn.isdirectory(dir) == 0 then
     local cwd = vim.uv.cwd()
     dir = cwd or '.'
   end
   vim.cmd('ToggleTerm dir=' .. vim.fn.fnameescape(dir))
-end, { desc = 'Toggle terminal (buffer directory)' })
+end
+
+map('n', '<C-_>', toggle_terminal, { desc = 'Toggle terminal (buffer directory)' })
+map('n', '<C-/>', toggle_terminal, { desc = 'Toggle terminal (buffer directory)' })
 
 -- ============================================================
 -- [[ LSP ]]
 -- ============================================================
-map('', '<leader>=', function()
+map('', '<leader>lf', function()
   if ok_conform then
     conform.format { async = true, lsp_format = 'fallback' }
   end
-end, { desc = '[F]ormat buffer' })
+end, { desc = '[L]SP [F]ormat buffer' })
 
 vim.api.nvim_create_autocmd('LspAttach', {
   group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
@@ -256,29 +293,30 @@ vim.api.nvim_create_autocmd('LspAttach', {
       vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
     end
 
-    map_lsp('grn', vim.lsp.buf.rename, '[R]e[n]ame')
-    map_lsp('gra', vim.lsp.buf.code_action, '[G]oto Code [A]ction', { 'n', 'x' })
+    map_lsp('<leader>lr', vim.lsp.buf.rename, '[L]SP [R]ename')
+    map_lsp('<leader>la', vim.lsp.buf.code_action, '[L]SP code [A]ction', { 'n', 'x' })
+    map_lsp('<leader>lk', hover_in_vsplit, '[L]SP hover in vertical split')
     if ok_snacks then
-      map_lsp('grr', function()
+      map_lsp('<leader>lR', function()
         snacks.picker.lsp_references()
-      end, '[G]oto [R]eferences')
-      map_lsp('gri', function()
+      end, '[L]SP [R]eferences')
+      map_lsp('<leader>li', function()
         snacks.picker.lsp_implementations()
-      end, '[G]oto [I]mplementation')
-      map_lsp('grd', function()
+      end, '[L]SP [I]mplementation')
+      map_lsp('<leader>ld', function()
         snacks.picker.lsp_definitions()
-      end, '[G]oto [D]efinition')
-      map_lsp('gO', function()
+      end, '[L]SP [D]efinition')
+      map_lsp('<leader>ls', function()
         snacks.picker.lsp_symbols()
-      end, 'Open Document Symbols')
-      map_lsp('gW', function()
+      end, '[L]SP document [S]ymbols')
+      map_lsp('<leader>lS', function()
         snacks.picker.lsp_workspace_symbols()
-      end, 'Open Workspace Symbols')
-      map_lsp('grt', function()
+      end, '[L]SP workspace [S]ymbols')
+      map_lsp('<leader>lt', function()
         snacks.picker.lsp_type_definitions()
-      end, '[G]oto [T]ype Definition')
+      end, '[L]SP [T]ype definition')
     end
-    map_lsp('grD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
+    map_lsp('<leader>lD', vim.lsp.buf.declaration, '[L]SP [D]eclaration')
 
     local client = vim.lsp.get_client_by_id(event.data.client_id)
     if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight, event.buf) then
@@ -339,11 +377,11 @@ map('n', '<F5>', '<cmd>UndotreeToggle<CR><cmd>UndotreeFocus<CR>', { silent = tru
 -- ============================================================
 do
   if ok_opencode then
-    map({ 'n', 'x' }, '<leader>oa', function()
+    map({ 'n', 'x' }, '<leader>ca', function()
       opencode.chat.start()
-    end, { desc = '[O]pen[C]ode: [A]sk' })
-    map({ 'n', 'x' }, '<leader>og', function()
+    end, { desc = '[C]hat [A]sk' })
+    map({ 'n', 'x' }, '<leader>cg', function()
       opencode.chat.infer()
-    end, { desc = '[O]pen[C]ode: [G]enerate' })
+    end, { desc = '[C]hat [G]enerate' })
   end
 end

@@ -37,8 +37,12 @@ require('which-key').setup {
     },
   },
   spec = {
+    { '<leader>f', group = '[F]ind' },
     { '<leader>s', group = '[S]earch' },
-    { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
+    { '<leader>g', group = '[G]it' },
+    { '<leader>l', group = '[L]SP' },
+    { '<leader>x', group = 'Diagnostics' },
+    { '<leader>c', group = '[C]hat' },
   },
 }
 
