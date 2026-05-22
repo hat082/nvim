@@ -1,12 +1,12 @@
 -- LSP: server configuration, Mason installer, formatter (conform), linting.
 
-vim.pack.add({
+vim.pack.add {
   'https://github.com/neovim/nvim-lspconfig',
   { src = 'https://github.com/mason-org/mason.nvim', version = 'main' },
   'https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim',
   { src = 'https://github.com/j-hui/fidget.nvim', version = 'main' },
   'https://github.com/stevearc/conform.nvim',
-})
+}
 
 -- Mason
 require('mason').setup {}
@@ -27,6 +27,7 @@ require('conform').setup {
   formatters_by_ft = {
     lua = { 'stylua' },
     typst = { 'typstfmt' },
+    python = { 'ruff_format' },
   },
 }
 
@@ -48,6 +49,27 @@ local servers = {
   lua_ls = {
     settings = { Lua = { completion = { callSnippet = 'Replace' } } },
   },
+  ruff = {
+    cmd = { 'ruff', 'server' },
+    rootMarkers = { 'pyproject.toml', 'ruff.toml', '.ruff.toml', '.git' },
+  },
+  basedpyright = {
+    cmd = { vim.fn.exepath 'basedpyright-langserver', '--stdio' },
+    filetypes = { 'python' },
+    root_markers = { 'pyrightconfig.json', 'pyproject.toml', 'setup.py', 'setup.cfg', '.git' },
+    settings = {
+      basedpyright = {
+        analysis = {
+          typeCheckingMode = 'recommended',
+          diagnosticSeverityOverrides = {
+            reportUnannotatedClassAttribute = 'none',
+            reportUnknownMemberType = 'none',
+            reportUnusedCallResult = 'none',
+          },
+        },
+      },
+    },
+  },
 }
 
 -- Map LSP server names to Mason package names where they differ
@@ -60,7 +82,7 @@ for i, name in ipairs(ensure_installed) do
     ensure_installed[i] = lsp_to_mason[name]
   end
 end
-vim.list_extend(ensure_installed, { 'stylua', 'clangd', 'tinymist' })
+vim.list_extend(ensure_installed, { 'stylua', 'clangd', 'tinymist', 'ruff', 'basedpyright' })
 require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
 -- Apply server configs and enable them
@@ -81,55 +103,6 @@ vim.api.nvim_create_autocmd('BufEnter', {
     end
   end,
 })
-vim.api.nvim_create_autocmd('LspAttach', {
-  group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
-  callback = function(event)
-    local map = function(keys, func, desc, mode)
-      mode = mode or 'n'
-      vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
-    end
-
-    map('grn', vim.lsp.buf.rename, '[R]e[n]ame')
-    map('gra', vim.lsp.buf.code_action, '[G]oto Code [A]ction', { 'n', 'x' })
-    map('grr', function() require('snacks').picker.lsp_references() end, '[G]oto [R]eferences')
-    map('gri', function() require('snacks').picker.lsp_implementations() end, '[G]oto [I]mplementation')
-    map('grd', function() require('snacks').picker.lsp_definitions() end, '[G]oto [D]efinition')
-    map('grD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
-    map('gO', function() require('snacks').picker.lsp_symbols() end, 'Open Document Symbols')
-    map('gW', function() require('snacks').picker.lsp_workspace_symbols() end, 'Open Workspace Symbols')
-    map('grt', function() require('snacks').picker.lsp_type_definitions() end, '[G]oto [T]ype Definition')
-
-    ---@param client vim.lsp.Client
-    ---@param method vim.lsp.protocol.Method
-    ---@param bufnr? integer
-    ---@return boolean
-    local function client_supports_method(client, method, bufnr)
-      return client:supports_method(method, bufnr)
-    end
-
-    local client = vim.lsp.get_client_by_id(event.data.client_id)
-    if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_documentHighlight, event.buf) then
-      local hl_group = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
-      vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
-        buffer = event.buf,
-        group = hl_group,
-        callback = vim.lsp.buf.document_highlight,
-      })
-      vim.api.nvim_create_autocmd({ 'CursorMoved', 'CursorMovedI' }, {
-        buffer = event.buf,
-        group = hl_group,
-        callback = vim.lsp.buf.clear_references,
-      })
-      vim.api.nvim_create_autocmd('LspDetach', {
-        group = vim.api.nvim_create_augroup('kickstart-lsp-detach', { clear = true }),
-        callback = function(event2)
-          vim.lsp.buf.clear_references()
-          vim.api.nvim_clear_autocmds { group = 'kickstart-lsp-highlight', buffer = event2.buf }
-        end,
-      })
-    end
-  end,
-})
 
 vim.diagnostic.config {
   severity_sort = true,
@@ -146,6 +119,8 @@ vim.diagnostic.config {
   virtual_text = {
     source = 'if_many',
     spacing = 2,
-    format = function(d) return d.message end,
+    format = function(d)
+      return d.message
+    end,
   },
 }

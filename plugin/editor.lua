@@ -2,6 +2,8 @@
 -- guess-indent, todo-comments, img-clip, undotree, suda, visual-multi,
 -- grammarly LSP.
 
+vim.g.tmux_navigator_no_mappings = 1
+
 vim.pack.add({
   -- Autopairs
   'https://github.com/windwp/nvim-autopairs',
@@ -31,6 +33,8 @@ vim.pack.add({
   'https://github.com/ionide/Ionide-vim',
   -- Smart comment toggling
   'https://github.com/numToStr/Comment.nvim',
+  -- Seamless pane navigation between Neovim and tmux
+  'https://github.com/christoomey/vim-tmux-navigator',
 })
 
 -- autopairs
@@ -41,8 +45,16 @@ require('ibl').setup {}
 
 -- nvim-lint
 local lint = require 'lint'
+lint.linters['markdownlint-cli2'] = vim.tbl_deep_extend('force', lint.linters['markdownlint-cli2'] or {}, {
+  args = {
+    '--config',
+    vim.fn.stdpath 'config' .. '/.markdownlint-cli2.yaml',
+    '--',
+  },
+})
 lint.linters_by_ft = {
   markdown = { 'markdownlint-cli2' },
+  python = { 'ruff' },
 }
 local lint_augroup = vim.api.nvim_create_augroup('lint', { clear = true })
 vim.api.nvim_create_autocmd({ 'BufEnter', 'BufWritePost', 'InsertLeave' }, {
